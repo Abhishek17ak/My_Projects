@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Driver Drowsiness Detection</string>
+    <string name="scan_barcode">Start</string>
+</resources>
