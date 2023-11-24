@@ -1,1 +1,8 @@
-# My_Projects
+# Project Library
+👋 Welcome to my GitHub Repository! I'm Abhishek Kalugade, a passionate Data Science graduate student at Stony Brook University, USA, with a Bachelor's degree in Computer Science and Engineering from D. Y. Patil College of Engineering and Technology, India. My journey into the world of technology includes a valuable stint as a Machine Learning Intern at SOFTRON, Maharashtra, where I contributed to enhancing industrial object detection models and fine-tuned algorithms for improved accuracy.
+
+Within this repository, you'll find a showcase of my diverse projects, each reflecting my dedication to innovation and problem-solving. One such project is "Driver Safex," a Driver Drowsiness Detection System, where I integrated machine learning into an Android application, using computer vision techniques to monitor drivers' eyes in real-time, promoting road safety and awareness. Another impactful endeavor is "ShareBite," a Food Donation App, which I spearheaded to empower communities by facilitating seamless food donations and fostering community support.
+
+My technical expertise spans Python, Java, C/C++, HTML/CSS, and more, while my proficiency in frameworks and libraries like TensorFlow, Pandas, and Keras underscores my commitment to staying at the forefront of data science and machine learning. I've also completed certifications such as Python for Everyone, IBM Data Science Professional, Deep Learning Specialization, and Machine Learning Specialization, further solidifying my skill set.
+
+Feel free to explore the code, provide feedback, and collaborate on exciting projects. Let's embark on this coding journey together, where innovation knows no bounds. Happy coding! 🚀

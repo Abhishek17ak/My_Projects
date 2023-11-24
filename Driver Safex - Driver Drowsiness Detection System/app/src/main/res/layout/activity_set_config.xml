@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".SetConfig">
+
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set 3 Mobile No.s"
+            android:textSize="35dp" />
+
+    <EditText
+        android:id="@+id/editTextmob1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mobile No.1" />
+
+    <EditText
+        android:id="@+id/editTextmob2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mobile No.2" />
+
+    <EditText
+        android:id="@+id/editTextmob3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mobile No.3" />
+
+        <Button
+            android:id="@+id/buttonsave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="281dp"
+        tools:srcCompat="@mipmap/callbg" />
+
+</LinearLayout>
