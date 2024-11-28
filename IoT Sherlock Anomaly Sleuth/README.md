@@ -18,7 +18,7 @@ We utilized the comprehensive IoT-23 dataset, a large-scale collection of networ
 
 - **Source**: Stratosphere Laboratory, Czech Technical University in Prague
 - **Link**: [IoT-23 Dataset](https://www.stratosphereips.org/datasets-iot23)
-- **Size**: Approximately 325 GB
+- **Size**: Approximately 21 GB
 - **Total number of rows**: 325,310,130
 - **File format**: Zeek conn.log files
 
