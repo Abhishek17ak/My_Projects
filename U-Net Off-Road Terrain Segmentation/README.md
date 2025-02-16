@@ -1,4 +1,4 @@
-# U-Net Off-Road Terrain Segmentation
+# VisionTrack - U-Net Off-Road Terrain Segmentation
 
 ## Project Description
 This project focuses on developing an advanced terrain segmentation model using the U-Net architecture. The primary goal is to accurately classify and segment various terrain types in off-road environments, which is crucial for applications in autonomous driving, agricultural robotics, and environmental monitoring. The model is trained on a comprehensive dataset of off-road terrain images, and it demonstrates high precision in distinguishing between different terrain classes, thereby enabling robust navigation and operational efficiency in challenging outdoor settings.
