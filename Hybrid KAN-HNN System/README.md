@@ -34,7 +34,8 @@ The Hybrid KAN-HNN model was validated on benchmark systems:
 ---
 
 ## Medium Article
-Learn more about the story behind this research: https://medium.com/@abhishek.kalugade17/beyond-neural-networks-how-i-built-a-physics-inspired-ai-to-model-the-universe-8f59e0b7856b(#)
+Learn more about the story behind this research: [Read on Medium](https://medium.com/@abhishek.kalugade17/beyond-neural-networks-how-i-built-a-physics-inspired-ai-to-model-the-universe-8f59e0b7856b)
+
 
 ---
 
