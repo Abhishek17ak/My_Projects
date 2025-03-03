@@ -39,7 +39,7 @@ Here's a glimpse of my diverse project portfolio:
 9. **SpaceX Falcon 9 Landing Prediction**: Space technology analysis
 10. **Fake News Detection**: NLP-based misinformation identifier
 
-*[View all projects]([link-to-projects-page](https://github.com/Abhishek17ak/My_Projects))*
+*[View all projects](https://github.com/Abhishek17ak/My_Projects)
 
 ## 🎓 Education & Certifications
 
