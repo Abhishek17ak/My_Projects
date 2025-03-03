@@ -47,10 +47,10 @@ Here's a glimpse of my diverse project portfolio:
 - B.E. in Computer Science and Engineering, D. Y. Patil College of Engineering and Technology, India
 
 Certifications:
-- Python for Everyone
-- IBM Data Science Professional
-- Deep Learning Specialization
-- Machine Learning Specialization
+- Python for Everyone [University of Michigan - Coursera]
+- IBM Data Science Professional [IBM - Coursera]
+- Deep Learning Specialization [DeepLearning.AI - Coursera]
+- Machine Learning Specialization [DeepLearning.AI,Stanford University - Coursera]
 
 ## 🔗 Connect with Me
 
