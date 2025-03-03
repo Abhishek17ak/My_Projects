@@ -39,7 +39,7 @@ Here's a glimpse of my diverse project portfolio:
 9. **SpaceX Falcon 9 Landing Prediction**: Space technology analysis
 10. **Fake News Detection**: NLP-based misinformation identifier
 
-*[View all projects](https://github.com/Abhishek17ak/My_Projects)
+[View all projects](https://github.com/Abhishek17ak/My_Projects)
 
 ## 🎓 Education & Certifications
 
@@ -54,8 +54,8 @@ Certifications:
 
 ## 🔗 Connect with Me
 
-- [LinkedIn]([your-linkedin-profile-link](https://www.linkedin.com/in/abhishek-kalugade-7185a8199/))
-- [Portfolio Website]([your-portfolio-website-if-any](https://abhishek17ak.github.io/Resume/))
+- [LinkedIn](https://www.linkedin.com/in/abhishek-kalugade-7185a8199/)
+- [Portfolio Website](https://abhishek17ak.github.io/Resume/)
 - Email: abhishek.kalugade@stonybrook.edu
 
 Feel free to explore my projects, provide feedback, or reach out for collaboration. Let's innovate together! 🚀
