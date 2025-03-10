@@ -1,56 +1,116 @@
 import streamlit as st
 import PyPDF2
 import docx
-from resume_parser import ResumeParser
-from job_parser import JobParser
-from matcher import ResumeJobMatcher
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import spacy
+import re
 
-def read_pdf(file):
-    """Read text from PDF file."""
-    text = ""
+def extract_text_from_file(uploaded_file):
+    """Extract text from PDF or DOCX file."""
     try:
-        pdf_reader = PyPDF2.PdfReader(file)
-        for page in pdf_reader.pages:
-            text += page.extract_text() + "\n"
+        if uploaded_file.type == "application/pdf":
+            pdf_reader = PyPDF2.PdfReader(uploaded_file)
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text() + "\n"
+            return text
+        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            doc = docx.Document(uploaded_file)
+            text = ""
+            for paragraph in doc.paragraphs:
+                text += paragraph.text + "\n"
+            return text
     except Exception as e:
-        st.error(f"Error reading PDF: {e}")
-    return text
+        st.error(f"Error extracting text: {str(e)}")
+    return None
 
-def read_docx(file):
-    """Read text from DOCX file."""
-    text = ""
-    try:
-        doc = docx.Document(file)
-        for paragraph in doc.paragraphs:
-            text += paragraph.text + "\n"
-    except Exception as e:
-        st.error(f"Error reading DOCX: {e}")
-    return text
+def extract_skills(text, nlp):
+    """Extract skills from text using spaCy and predefined skill patterns."""
+    # Define skill categories and their patterns
+    skill_patterns = {
+        "Programming Languages": [
+            "python", "java", "javascript", "typescript", "c\\+\\+", "ruby", "php", "swift",
+            "kotlin", "rust", "golang", "scala", "r", "matlab"
+        ],
+        "Machine Learning & AI": [
+            "machine learning", "deep learning", "neural networks", "natural language processing",
+            "computer vision", "tensorflow", "pytorch", "keras", "scikit-learn", "nlp",
+            "artificial intelligence", "ml", "ai", "transformers", "lstm", "cnn"
+        ],
+        "Data Science": [
+            "data science", "data analysis", "statistics", "pandas", "numpy", "matplotlib",
+            "data visualization", "jupyter", "feature engineering", "data mining",
+            "data modeling", "regression", "classification"
+        ],
+        "Cloud & DevOps": [
+            "aws", "azure", "gcp", "docker", "kubernetes", "jenkins", "ci/cd", "git",
+            "terraform", "ansible", "cloud computing", "devops", "mlops"
+        ],
+        "Big Data": [
+            "hadoop", "spark", "kafka", "hive", "pig", "nosql", "mongodb", "cassandra",
+            "big data", "data warehouse", "etl", "data pipeline"
+        ],
+        "Web Technologies": [
+            "react", "angular", "vue", "node.js", "django", "flask", "fastapi",
+            "rest api", "graphql", "html", "css", "sql"
+        ],
+        "Soft Skills": [
+            "leadership", "communication", "teamwork", "problem solving",
+            "project management", "agile", "scrum", "mentoring"
+        ]
+    }
 
-def format_salary(salary_info):
-    """Format salary information for display."""
-    if not salary_info:
-        return "Not specified"
+    found_skills = {category: [] for category in skill_patterns}
     
-    min_salary = f"${salary_info['min']:,.0f}"
-    max_salary = f"${salary_info['max']:,.0f}"
+    # Convert text to lowercase for matching
+    text_lower = text.lower()
     
-    if salary_info.get("original"):
-        # Show both hourly and annual
-        orig = salary_info["original"]
-        return f"${orig['min']:.2f} - ${orig['max']:.2f}/hour ({min_salary} - {max_salary}/year)"
-    else:
-        return f"{min_salary} - {max_salary}/year"
+    # Find skills in each category
+    for category, patterns in skill_patterns.items():
+        for skill in patterns:
+            if re.search(r'\b' + re.escape(skill) + r'\b', text_lower):
+                found_skills[category].append(skill)
+    
+    return found_skills
+
+def calculate_match_score(resume_skills, job_skills):
+    """Calculate match score based on skills overlap."""
+    total_required = 0
+    total_matched = 0
+    
+    for category in job_skills:
+        if job_skills[category]:  # If category has any skills
+            total_required += len(job_skills[category])
+            for skill in job_skills[category]:
+                if skill in resume_skills.get(category, []):
+                    total_matched += 1
+    
+    return (total_matched / total_required * 100) if total_required > 0 else 0
+
+def identify_missing_skills(resume_skills, job_skills):
+    """Identify skills present in job description but missing from resume."""
+    missing_skills = {}
+    
+    for category in job_skills:
+        if job_skills[category]:  # If category has any skills
+            missing = [skill for skill in job_skills[category] 
+                      if skill not in resume_skills.get(category, [])]
+            if missing:
+                missing_skills[category] = missing
+    
+    return missing_skills
 
 def main():
-    st.set_page_config(page_title="Advanced Resume Matcher", layout="wide")
+    st.set_page_config(page_title="Resume Skills Matcher", layout="wide")
+    st.title("Resume Skills Matcher")
     
-    # Initialize parsers and matcher
-    resume_parser = ResumeParser()
-    job_parser = JobParser()
-    matcher = ResumeJobMatcher()
-    
-    st.title("Advanced Resume Matcher")
+    # Load spaCy model
+    try:
+        nlp = spacy.load("en_core_web_lg")
+    except:
+        st.error("Please install the spaCy model: python -m spacy download en_core_web_lg")
+        return
     
     # Create two columns
     col1, col2 = st.columns(2)
@@ -59,95 +119,59 @@ def main():
     with col1:
         st.subheader("Resume Upload")
         resume_file = st.file_uploader("Upload Resume (PDF or DOCX)", type=["pdf", "docx"])
-        
-        if resume_file:
-            # Read resume file
-            if resume_file.type == "application/pdf":
-                resume_text = read_pdf(resume_file)
-            else:
-                resume_text = read_docx(resume_file)
-            
-            if resume_text:
-                resume_data = resume_parser.parse_resume(resume_text)
     
     # Job description section
     with col2:
         st.subheader("Job Description")
         job_description = st.text_area("Paste job description here", height=300)
-        
-        if job_description:
-            job_data = job_parser.parse_job_description(job_description)
     
     # Analysis button
     if st.button("Analyze Match") and resume_file and job_description:
-        st.divider()
-        
-        # Calculate match score
-        match_results = matcher.calculate_match_score(resume_data, job_data)
-        overall_score = match_results["overall_score"]
-        
-        # Display overall match score
-        st.header("Match Analysis")
-        st.metric("Overall Match Score", f"{overall_score:.1f}%")
-        
-        # Create three columns for detailed scores
-        score_col1, score_col2, score_col3 = st.columns(3)
-        
-        # Skills score
-        with score_col1:
-            skills_score = match_results["component_scores"]["skills"]["overall_score"]
-            st.metric("Skills Match", f"{skills_score:.1f}%")
-        
-        # Education score
-        with score_col2:
-            education_score = match_results["component_scores"]["education"]["score"]
-            st.metric("Education Match", f"{education_score:.1f}%")
-        
-        # Experience score
-        with score_col3:
-            experience_score = match_results["component_scores"]["experience"]["score"]
-            st.metric("Experience Match", f"{experience_score:.1f}%")
-        
-        st.divider()
-        
-        # Detailed Analysis Section
-        st.subheader("Detailed Analysis")
-        
-        # Missing Skills
-        if match_results["missing_skills"]:
-            st.write("**Missing Skills:**")
-            for category, skills in match_results["missing_skills"].items():
-                if skills:
-                    st.write(f"- {category.title()}: {', '.join(skills)}")
-        
-        # Experience Analysis
-        exp_details = match_results["component_scores"]["experience"]["details"]
-        st.write("**Experience Analysis:**")
-        st.write(f"- Your experience: {exp_details['years_match']['resume_years']:.1f} years")
-        st.write(f"- Required: {exp_details['years_match']['required_years']:.1f} years")
-        if exp_details['years_match'].get('preferred_years'):
-            st.write(f"- Preferred: {exp_details['years_match']['preferred_years']:.1f} years")
-        
-        # Education Analysis
-        edu_details = match_results["component_scores"]["education"]["details"]
-        st.write("**Education Analysis:**")
-        if job_data["education"]["required_degree"]:
-            st.write(f"- Required degree: {job_data['education']['required_degree'].title()}")
-        if job_data["education"]["fields"]:
-            st.write(f"- Desired fields: {', '.join(job_data['education']['fields'])}")
-        
-        # Salary Information
-        if job_data["salary"]:
-            st.write("**Salary Range:**")
-            st.write(format_salary(job_data["salary"]))
-        
-        st.divider()
-        
-        # Improvement Suggestions
-        if match_results["improvement_suggestions"]:
-            st.subheader("Improvement Suggestions")
-            for suggestion in match_results["improvement_suggestions"]:
-                st.write(f"- {suggestion}")
+        with st.spinner("Analyzing..."):
+            # Extract text from resume
+            resume_text = extract_text_from_file(resume_file)
+            
+            if resume_text:
+                # Extract skills
+                resume_skills = extract_skills(resume_text, nlp)
+                job_skills = extract_skills(job_description, nlp)
+                
+                # Calculate match score
+                match_score = calculate_match_score(resume_skills, job_skills)
+                
+                # Find missing skills
+                missing_skills = identify_missing_skills(resume_skills, job_skills)
+                
+                # Display results
+                st.divider()
+                
+                # Display match score with color
+                st.header("Skills Match Analysis")
+                score_color = "green" if match_score >= 70 else "orange" if match_score >= 50 else "red"
+                st.markdown(f"<h2 style='color: {score_color}'>Skills Match Score: {match_score:.1f}%</h2>", 
+                          unsafe_allow_html=True)
+                
+                # Display skills comparison
+                st.subheader("Skills Analysis by Category")
+                
+                for category in job_skills:
+                    if job_skills[category]:  # If category has any required skills
+                        st.write(f"\n**{category}**")
+                        for skill in job_skills[category]:
+                            if skill in resume_skills.get(category, []):
+                                st.markdown(f"✅ {skill}")
+                            else:
+                                st.markdown(f"❌ {skill}")
+                
+                # Display missing skills summary
+                if missing_skills:
+                    st.subheader("Missing Skills Summary")
+                    for category, skills in missing_skills.items():
+                        if skills:  # If category has missing skills
+                            st.write(f"**{category}:**")
+                            st.write(", ".join(skills))
+            else:
+                st.error("Could not extract text from the uploaded file.")
 
 if __name__ == "__main__":
     main() 
