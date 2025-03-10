@@ -3,8 +3,10 @@ import PyPDF2
 import docx
 import re
 import os
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Union, BinaryIO
 from transformers import pipeline
+import io
+from datetime import datetime
 
 class ResumeParser:
     """
@@ -56,12 +58,20 @@ class ResumeParser:
             (r"(?:since|from)\s*(?:19|20)(\d{2})", lambda x: 2024 - (2000 + int(x)) if int(x) < 24 else 2024 - (1900 + int(x)))
         ]
     
-    def extract_text(self, file_path: str) -> str:
+    def extract_text(self, file: Union[str, BinaryIO]) -> str:
         """Extract text from PDF or DOCX file."""
-        if file_path.lower().endswith('.pdf'):
-            return self._extract_from_pdf(file_path)
-        elif file_path.lower().endswith('.docx'):
-            return self._extract_from_docx(file_path)
+        if isinstance(file, str):
+            if file.lower().endswith('.pdf'):
+                return self._extract_from_pdf(file)
+            elif file.lower().endswith('.docx'):
+                return self._extract_from_docx(file)
+        else:
+            # Handle Streamlit uploaded file
+            file_type = file.type
+            if file_type == "application/pdf":
+                return self._extract_from_pdf_bytes(file)
+            elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                return self._extract_from_docx_bytes(file)
         raise ValueError("Unsupported file format")
 
     def _extract_from_pdf(self, file_path: str) -> str:
@@ -79,6 +89,28 @@ class ResumeParser:
         text = ""
         try:
             doc = docx.Document(file_path)
+            for paragraph in doc.paragraphs:
+                text += paragraph.text + "\n"
+        except Exception as e:
+            print(f"Error extracting text from DOCX: {e}")
+        return text
+
+    def _extract_from_pdf_bytes(self, file: BinaryIO) -> str:
+        """Extract text from PDF bytes."""
+        text = ""
+        try:
+            pdf_reader = PyPDF2.PdfReader(file)
+            for page in pdf_reader.pages:
+                text += page.extract_text() + "\n"
+        except Exception as e:
+            print(f"Error extracting text from PDF: {e}")
+        return text
+
+    def _extract_from_docx_bytes(self, file: BinaryIO) -> str:
+        """Extract text from DOCX bytes."""
+        text = ""
+        try:
+            doc = docx.Document(file)
             for paragraph in doc.paragraphs:
                 text += paragraph.text + "\n"
         except Exception as e:
@@ -177,9 +209,7 @@ class ResumeParser:
         """Extract detailed work experience using advanced NLP."""
         experience = []
         doc = self.nlp(text)
-        
-        # Use transformer-based NER for better entity recognition
-        ner_results = self.ner_pipeline(text)
+        current_year = datetime.now().year
         
         # Extract experience sections
         experience_sections = []
@@ -208,6 +238,8 @@ class ResumeParser:
                 "title": None,
                 "company": None,
                 "duration": None,
+                "start_year": None,
+                "end_year": None,
                 "years": 0.0,
                 "responsibilities": [],
                 "achievements": []
@@ -221,14 +253,50 @@ class ResumeParser:
                     exp_entry["title"] = ent.text
             
             # Extract duration and calculate years
-            for pattern, converter in self.experience_patterns:
-                matches = re.findall(pattern, section)
+            duration_text = section.lower()
+            
+            # Look for date patterns
+            date_patterns = [
+                # Present/Current patterns with year
+                (r"(20\d{2}|19\d{2})\s*[-–—]\s*(present|current|now|\s*$)", 
+                 lambda match: (int(match[0]), current_year)),
+                # Year range patterns
+                (r"(20\d{2}|19\d{2})\s*[-–—]\s*(20\d{2}|19\d{2})", 
+                 lambda match: (int(match[0]), int(match[1]))),
+                # Since year pattern
+                (r"since\s*(20\d{2}|19\d{2})", 
+                 lambda match: (int(match[0]), current_year))
+            ]
+            
+            # Try to find dates in the text
+            for pattern, handler in date_patterns:
+                matches = re.findall(pattern, duration_text)
                 if matches:
-                    if len(matches[0]) == 2:  # Range pattern
-                        exp_entry["years"] = converter(*matches[0])
-                    else:  # Single value pattern
-                        exp_entry["years"] = converter(matches[0])
-                    break
+                    try:
+                        start_year, end_year = handler(matches[0])
+                        exp_entry["start_year"] = start_year
+                        exp_entry["end_year"] = end_year
+                        exp_entry["duration"] = f"{start_year} - {'Present' if end_year == current_year else end_year}"
+                        exp_entry["years"] = end_year - start_year
+                        break
+                    except Exception as e:
+                        print(f"Error processing date pattern: {e}")
+                        continue
+            
+            # If no date pattern found, try experience patterns
+            if exp_entry["years"] == 0:
+                for pattern, converter in self.experience_patterns:
+                    matches = re.findall(pattern, section)
+                    if matches:
+                        try:
+                            if len(matches[0]) == 2:  # Range pattern
+                                exp_entry["years"] = converter(matches[0][0], matches[0][1])
+                            else:  # Single value pattern
+                                exp_entry["years"] = converter(matches[0])
+                            break
+                        except Exception as e:
+                            print(f"Error processing experience pattern: {e}")
+                            continue
             
             # Extract responsibilities and achievements
             for sent in section_doc.sents:
@@ -295,9 +363,9 @@ class ResumeParser:
             total_years += exp.get("years", 0.0)
         return total_years
     
-    def parse_resume(self, file_path: str) -> Dict[str, Any]:
+    def parse_resume(self, file: Union[str, BinaryIO]) -> Dict[str, Any]:
         """Parse resume and extract all information."""
-        text = self.extract_text(file_path)
+        text = self.extract_text(file)
         
         # Extract all information
         contact_info = self.extract_contact_info(text)

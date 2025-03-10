@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import Dict, List, Any, Tuple, Optional
+from datetime import datetime
 
 class ResumeJobMatcher:
     """
@@ -212,7 +213,22 @@ class ResumeJobMatcher:
 
     def calculate_experience_score(self, resume_experience: List[Dict[str, Any]], job_experience: Dict[str, Any]) -> Dict[str, Any]:
         """Calculate detailed experience match score."""
-        resume_years = sum([exp.get("years", 0.0) for exp in resume_experience])
+        current_year = datetime.now().year
+
+        # Calculate total years including present positions
+        resume_years = 0
+        for exp in resume_experience:
+            years = exp.get("years", 0.0)
+            # Handle "present" or ongoing positions
+            if isinstance(exp.get("duration"), str) and any(word in exp["duration"].lower() for word in ["present", "current", "now"]):
+                # If it's a current position, calculate years from start year to now
+                if "start_year" in exp:
+                    years = current_year - exp["start_year"]
+                else:
+                    # If no start year, use the provided years or default to 0
+                    years = exp.get("years", 0.0)
+            resume_years += years
+
         required_years = job_experience.get("required_years", 0.0)
         preferred_years = job_experience.get("preferred_years", 0.0)
         
@@ -283,91 +299,81 @@ class ResumeJobMatcher:
         }
 
     def calculate_match_score(self, resume_data: Dict[str, Any], job_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Calculate detailed match scores between resume and job description."""
-        # Calculate individual component scores
-        skill_score = self.calculate_skill_score(resume_data["skills"], job_data["skills"])
+        """Calculate the overall match score between a resume and job description."""
+        # Calculate skill scores
+        skill_scores = self.calculate_skill_score(resume_data["skills"], job_data["skills"])
+        
+        # Calculate education score
         education_score = self.calculate_education_score(resume_data["education"], job_data["education"])
+        
+        # Calculate experience score
         experience_score = self.calculate_experience_score(resume_data["experience"], job_data["experience"])
         
-        # Calculate weighted overall score
+        # Calculate overall weighted score
         total_score = (
-            skill_score["overall_score"] * skill_score["weight"] +
+            skill_scores["overall_score"] * skill_scores["weight"] +
             education_score["score"] * education_score["weight"] +
             experience_score["score"] * experience_score["weight"]
         )
         
-        # Generate missing skills summary
-        missing_skills = {
-            category: details["missing"]
-            for category, details in skill_score["detailed_scores"].items()
-            if details["missing"]
-        }
+        # Compile missing skills
+        missing_skills = {}
+        for category, details in skill_scores["detailed_scores"].items():
+            if details["missing"]:
+                missing_skills[category] = details["missing"]
         
-        # Generate improvement suggestions
-        suggestions = []
-        
-        # Skill-based suggestions
-        for category, missing in missing_skills.items():
-            if missing:
-                suggestions.append(f"Acquire {category} skills: {', '.join(missing)}")
-        
-        # Education-based suggestions
-        if education_score["score"] < 80:
-            if job_data["education"]["required_degree"]:
-                suggestions.append(f"Consider pursuing a {job_data['education']['required_degree']} degree")
-            if job_data["education"]["fields"]:
-                suggestions.append(f"Focus on education in: {', '.join(job_data['education']['fields'])}")
-        
-        # Experience-based suggestions
-        exp_details = experience_score["details"]
-        if exp_details["years_match"]["score"] < 80:
-            gap = exp_details["years_match"]["required_years"] - exp_details["years_match"]["resume_years"]
-            if gap > 0:
-                suggestions.append(f"Gain {gap:.1f} more years of relevant experience")
-        
-        if exp_details.get("leadership_match", {}).get("score", 100) < 80:
-            suggestions.append("Seek leadership or management experience")
+        # Get improvement suggestions
+        improvement_suggestions = self.get_resume_improvements({
+            "skill_scores": skill_scores,
+            "education_score": education_score,
+            "experience_score": experience_score,
+            "missing_skills": missing_skills
+        }, job_data)
         
         return {
             "overall_score": total_score,
             "component_scores": {
-                "skills": skill_score,
+                "skills": skill_scores,
                 "education": education_score,
                 "experience": experience_score
             },
             "missing_skills": missing_skills,
-            "improvement_suggestions": suggestions
+            "improvement_suggestions": improvement_suggestions
         }
-    
+
     def get_resume_improvements(self, match_result: Dict[str, Any], job_data: Dict[str, Any]) -> List[str]:
-        """
-        Generate suggestions for improving the resume based on the match results.
-        
-        Args:
-            match_result: Dictionary containing match scores and missing skills
-            job_data: Dictionary containing parsed job information
-            
-        Returns:
-            List of improvement suggestions
-        """
+        """Generate improvement suggestions based on match results."""
         suggestions = []
         
-        # Suggest adding missing skills
-        if match_result["missing_skills"]:
-            suggestions.append(f"Add the following skills to your resume: {', '.join(match_result['missing_skills'])}")
+        # Skills improvements
+        skill_scores = match_result["skill_scores"]
+        for category, details in skill_scores["detailed_scores"].items():
+            if details["score"] < 80:
+                missing = details["missing"]
+                if missing:
+                    suggestions.append(
+                        f"Consider acquiring or highlighting these {category} skills: {', '.join(missing)}"
+                    )
         
-        # Suggest improving education section if the match is low
-        if match_result["education_match"] < 70 and job_data.get("required_education"):
-            suggestions.append("Highlight your education that aligns with the job requirements: " + 
-                              ", ".join(job_data["required_education"]))
+        # Education improvements
+        edu_score = match_result["education_score"]
+        if edu_score["score"] < 80:
+            if job_data["education"].get("required_degree"):
+                suggestions.append(
+                    f"Consider pursuing {job_data['education']['required_degree']} degree"
+                )
+            if job_data["education"].get("fields"):
+                suggestions.append(
+                    f"Consider education in: {', '.join(job_data['education']['fields'])}"
+                )
         
-        # Suggest improving experience section if the match is low
-        if match_result["experience_match"] < 70 and job_data.get("required_experience"):
-            suggestions.append("Emphasize experience that aligns with the job requirements: " + 
-                              ", ".join(job_data["required_experience"]))
-        
-        # General suggestions
-        if match_result["overall_match"] < 50:
-            suggestions.append("Consider tailoring your resume specifically for this job position")
+        # Experience improvements
+        exp_score = match_result["experience_score"]
+        if exp_score["score"] < 80:
+            years_match = exp_score["details"]["years_match"]
+            if years_match["resume_years"] < years_match["required_years"]:
+                suggestions.append(
+                    f"Gain more experience - currently {years_match['resume_years']:.1f} years vs required {years_match['required_years']:.1f} years"
+                )
         
         return suggestions 
