@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  api:
+    build: 
+      context: .
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+    ports:
+      - "5000:5000"
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./financial_summaries.db:/app/financial_summaries.db
+      - ./models:/app/models
+    environment:
+      - CONFIG_FILE=config.yaml
+      - FLASK_APP=app/api.py
+      - FLASK_ENV=production
+      - LOG_LEVEL=INFO
+      - TRANSFORMERS_HTTP_TIMEOUT=120
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+    restart: unless-stopped
+    
+  web:
+    build: 
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:5000
+      - API_KEY=your_api_key_1
+    depends_on:
+      - api
+    restart: unless-stopped 
