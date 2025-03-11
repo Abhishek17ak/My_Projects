@@ -62,6 +62,9 @@ The application will be available at http://localhost:8501 in your web browser.
 - `matcher.py`: Algorithms for matching resumes with job descriptions
 - `interview_generator.py`: Module for generating interview questions
 - `utils.py`: Utility functions for text processing and visualization
+## Screenshots
+
+![image](https://github.com/user-attachments/assets/dc7d985f-14e8-4905-b08b-1f6fa0df3775)
 
 ## License
 
