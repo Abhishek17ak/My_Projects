@@ -10,9 +10,12 @@ A professional cover letter generator built with Streamlit that creates personal
 - **User-Friendly Interface**: Simple, intuitive interface for uploading documents and generating cover letters
 - **Customization**: Edit generated cover letters before downloading
 
-## Live Demo
+## Screenshots
+![image](https://github.com/user-attachments/assets/8d985492-bed2-4abe-b4d6-57e4aa66b488)
+![image](https://github.com/user-attachments/assets/f0d0df3a-4c8f-420a-a9c6-82faa7718416)
 
-Try the application live on Streamlit Cloud: [Cover Letter Generator](https://cover-letter-generator.streamlit.app/)
+
+
 
 ## How to Use
 
