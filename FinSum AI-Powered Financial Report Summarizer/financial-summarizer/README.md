@@ -74,6 +74,10 @@ python -m streamlit run simple_summarizer.py
 ```bash
 docker-compose up -d
 ```
+## Screenshot:
+
+![image](https://github.com/user-attachments/assets/f9056d35-5d03-4619-bb63-8712d589d8d5)
+
 
 ### Accessing the Application
 
