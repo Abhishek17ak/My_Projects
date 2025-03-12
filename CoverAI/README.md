@@ -1,4 +1,4 @@
-# Cover Letter Generator
+# CoverAI - Cover Letter Generator
 
 A professional cover letter generator built with Streamlit that creates personalized cover letters based on your resume and job descriptions.
 
