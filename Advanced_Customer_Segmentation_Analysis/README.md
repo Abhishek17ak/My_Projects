@@ -51,7 +51,7 @@ customer_seg/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/customer_seg.git
+git clone https://github.com/Abhishek17ak/My_Projects/tree/main/Advanced_Customer_Segmentation_Analysis.git
 cd customer_seg
 ```
 
@@ -65,7 +65,7 @@ pip install -r requirements.txt
    ```bash
    jupyter notebook
    ```
-   - Navigate to and open `customer_segmentation_notebook.py`
+   - Navigate to and open `customer_segmentation_notebook.ipynb`
    - Run all cells to perform the complete analysis
 
 ## Analysis Components
