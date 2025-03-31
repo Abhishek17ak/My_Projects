@@ -6,8 +6,8 @@ This guide will help you quickly get started with the Customer Segmentation proj
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/customer_seg.git
-   cd customer_seg
+   git clone https://github.com/Abhishek17ak/Advanced_Customer_Segmentation_Analysis.git
+   cd Advanced_Customer_Segmentation_Analysis
    ```
 
 2. **Create and activate a virtual environment** (optional but recommended):
