@@ -41,7 +41,7 @@ The project uses the [Online Retail Dataset](https://archive.ics.uci.edu/ml/data
 customer_seg/
 ├── data/
 │   └── Online Retail.xlsx
-├── customer_segmentation_notebook.py  # Complete Jupyter notebook implementation
+├── customer_segmentation_notebook.ipynb  
 ├── requirements.txt
 ├── LICENSE
 └── README.md
