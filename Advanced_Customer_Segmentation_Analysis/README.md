@@ -52,7 +52,7 @@ customer_seg/
 1. Clone the repository:
 ```bash
 git clone https://github.com/Abhishek17ak/My_Projects/tree/main/Advanced_Customer_Segmentation_Analysis.git
-cd customer_seg
+cd Advanced_Customer_Segmentation_Analysis
 ```
 
 2. Install required packages:
