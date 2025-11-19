@@ -1,0 +1,43 @@
+# Service account credentials
+*.json
+!package.json
+!package-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Spark
+logs/
+*.log
+checkpoint/
+*-checkpoint/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data files
+*.csv
+*.parquet
+data/*.csv
+data/*.parquet
+
+# Temporary files
+*.tmp
+*.temp
+
