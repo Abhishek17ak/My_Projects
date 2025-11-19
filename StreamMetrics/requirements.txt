@@ -1,2 +1,3 @@
 confluent-kafka
 pyspark
+google-cloud-bigquery
