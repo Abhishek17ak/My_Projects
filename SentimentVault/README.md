@@ -50,7 +50,8 @@ A production-ready sentiment analysis system that classifies Amazon reviews as P
 
 1. **Clone and setup:**
 ```bash
-cd /Users/abhishekkalugade/Programming/My_Projects/SentimentVault
+git clone https://github.com/YOUR_USERNAME/SentimentVault.git
+cd SentimentVault
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -335,12 +336,6 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 ## 🔒 Security
 
 For security issues, please see [SECURITY.md](./SECURITY.md) for responsible disclosure.
-
-## 📧 Contact
-
-- **Author:** Abhishek Kalugade
-- **GitHub:** [@Abhishek17ak](https://github.com/Abhishek17ak)
-- **Email:** abhishek.kalugade@example.com
 
 ## 🎯 Resume Metrics
 

@@ -400,7 +400,6 @@ Solution: Model might be on CPU (slower). Check `/health` endpoint for device in
 
 - Documentation: See README.md
 - Issues: GitHub Issues
-- Email: support@sentimentvault.dev
 
 ---
 

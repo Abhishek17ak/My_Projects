@@ -34,7 +34,7 @@ Community leaders have the right and responsibility to:
 
 ## Reporting
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at conduct@sentimentvault.dev. All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported using the GitHub issue tracker or through the project's discussion forums. All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the reporter of any incident.
 

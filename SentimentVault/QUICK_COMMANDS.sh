@@ -7,7 +7,7 @@
 # ============================================================================
 
 # Navigate to project
-cd /Users/abhishekkalugade/Programming/My_Projects/SentimentVault
+cd SentimentVault
 
 # Create virtual environment
 python3 -m venv venv
@@ -81,7 +81,7 @@ curl -X POST http://localhost:8000/predict \
 # ============================================================================
 
 # In a NEW terminal window:
-cd /Users/abhishekkalugade/Programming/My_Projects/SentimentVault
+cd SentimentVault
 source venv/bin/activate
 
 # Start load test

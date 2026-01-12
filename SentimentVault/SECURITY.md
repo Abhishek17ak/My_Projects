@@ -2,17 +2,16 @@
 
 ## Reporting Security Vulnerabilities
 
-If you discover a security vulnerability in SentimentVault, **do not open a public GitHub issue**. Instead, please report it responsibly.
+If you discover a security vulnerability in SentimentVault, **do not open a public GitHub issue**. Instead, please use the GitHub Security Advisory feature to report it responsibly.
 
 ### How to Report
 
-**Email:** security@sentimentvault.dev
-**Subject:** `[SECURITY] Vulnerability Report`
-
-Include:
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
+1. Go to the Security tab of the repository
+2. Click "Report a vulnerability"
+3. Include:
+   - Description of the vulnerability
+   - Steps to reproduce
+   - Potential impact
 - Any known mitigations
 - Your name and contact information (optional)
 

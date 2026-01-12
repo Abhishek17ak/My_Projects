@@ -102,7 +102,7 @@ Closes #123
 
 ### Clone and Setup
 ```bash
-git clone https://github.com/Abhishek17ak/SentimentVault.git
+git clone https://github.com/YOUR_USERNAME/SentimentVault.git
 cd SentimentVault
 python3 -m venv venv
 source venv/bin/activate
@@ -281,7 +281,6 @@ Example:
 - **Documentation:** Check README.md and docs/
 - **Issues:** Search existing GitHub Issues
 - **Discussions:** GitHub Discussions for questions
-- **Email:** abhishek.kalugade@example.com
 
 ## Recognition
 

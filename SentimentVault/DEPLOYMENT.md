@@ -14,7 +14,7 @@ SentimentVault can be deployed in multiple ways depending on your infrastructure
 ### Setup
 ```bash
 # Clone and setup
-git clone https://github.com/Abhishek17ak/SentimentVault.git
+git clone https://github.com/YOUR_USERNAME/SentimentVault.git
 cd SentimentVault
 
 # Create virtual environment
@@ -204,7 +204,7 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
 # 4. Clone repository
-git clone https://github.com/Abhishek17ak/SentimentVault.git
+git clone https://github.com/YOUR_USERNAME/SentimentVault.git
 cd SentimentVault
 
 # 5. Configure Redis endpoint (ElastiCache)
@@ -408,4 +408,4 @@ aws ecs update-service \
 
 ---
 
-**Need help?** See CONTRIBUTING.md or contact support@sentimentvault.dev
+**Need help?** See CONTRIBUTING.md or open an issue on GitHub
